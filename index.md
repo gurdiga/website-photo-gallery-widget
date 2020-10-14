@@ -23,10 +23,12 @@ So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s
 Include this script in your page:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/gurdiga/gallery@v1.0/gallery.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gurdiga/gallery@v1.0.1/gallery.js"></script>
 ```
 
-You can also host it yourself if you prefer.
+You can also host it yourself if you prefer, but using the link above has the added benefit of making it easier to get the most up to date [version][0].
+
+[0]: https://github.com/gurdiga/gallery/releases
 
 ## Technical Notes
 
