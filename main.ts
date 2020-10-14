@@ -21,7 +21,7 @@ function decorateLink(a: HTMLAnchorElement) {
     return;
   }
 
-  a.addEventListener("click", function (event) {
+  a.addEventListener("click", async (event) => {
     event.preventDefault();
 
     const gallery = findGallery(a);
@@ -29,7 +29,7 @@ function decorateLink(a: HTMLAnchorElement) {
     if (gallery) {
       displayGallery(gallery);
     } else {
-      buildGallery(a);
+      await buildGallery(a);
     }
   });
 }
@@ -53,29 +53,30 @@ function findGallery(a: HTMLAnchorElement): HTMLElement | null {
 function displayGallery(gallery: HTMLElement) {
   const initialDisplayValue = gallery.getAttribute("data-initial-display-value");
 
-  if (!initialDisplayValue) {
-    console.warn("displayGallery: Trying to display a gallery which was not initialized.");
+  if (initialDisplayValue === null) {
+    console.warn("displayGallery: gallery has not been initialized.");
     return;
   }
 
   gallery.style.display = initialDisplayValue;
 }
 
-function buildGallery(a: HTMLAnchorElement) {
-  a.style.cursor = "progress";
+async function buildGallery(a: HTMLAnchorElement) {
+  a.style.cursor = "progresss";
 
-  fetch(a.href)
+  const imageUrls = await fetch(a.href)
     .then((r) => r.text())
-    .then(extractURLs(a.href))
-    .then(buildImages)
-    .then(addScroller)
-    .then(addWrapper)
-    .then(addCloseButton)
-    .then(appendToPage)
-    .then((wrapper) => {
-      a.setAttribute("data-gallery-id", wrapper.id);
-      a.style.cursor = "pointer";
-    });
+    .then(extractURLs(a.href));
+
+  const images = buildImages(imageUrls);
+  const scroller = addScroller(images);
+  const wrapper = addWrapper(scroller);
+
+  addCloseButton(wrapper);
+  appendToPage(wrapper);
+
+  a.setAttribute("data-gallery-id", wrapper.id);
+  a.style.cursor = "pointer";
 }
 
 function appendToPage(wrapper: HTMLDivElement): HTMLDivElement {
