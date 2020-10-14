@@ -7,4 +7,4 @@ edit:
 e: edit
 
 install:
-	gem install --user-install bundler jekyll jekyll-theme-slate
+	gem install --user-install jekyll
