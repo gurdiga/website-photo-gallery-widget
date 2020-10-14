@@ -137,6 +137,7 @@ function addScroller(images) {
 
   setStyle(scroller, {
     overflow: "scroll",
+    overscrollBehavior: "none",
     display: "flex",
     alignItems: "center",
     background: `rgba(0, 0, 0, ${isSafari ? 0.5 : 0.75})`,
