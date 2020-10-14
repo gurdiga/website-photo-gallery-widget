@@ -1,0 +1,9 @@
+{
+  "files": ["main.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "outFile": "gallery.js",
+    "target": "es5",
+    "lib": ["es2020", "dom"]
+  }
+}

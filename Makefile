@@ -1,3 +1,6 @@
+build:
+	tsc
+
 start:
 	jekyll serve --trace
 
