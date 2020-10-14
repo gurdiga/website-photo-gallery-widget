@@ -1,3 +1,8 @@
+default: watch
+
+watch:
+	tsc --watch
+
 build:
 	tsc
 
