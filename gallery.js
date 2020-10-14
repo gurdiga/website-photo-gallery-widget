@@ -117,6 +117,7 @@ function addCloseButton(wrapper) {
     border: "none",
     padding: "0.2em 0.5em",
     color: "white",
+    textShadow: "2px 2px 5px black",
     fontSize: "2em",
     zIndex: "2"
   });
