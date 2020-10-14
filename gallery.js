@@ -158,6 +158,7 @@ function addScroller(images) {
 function addWrapper(scroller) {
   const wrapper = document.createElement("div");
 
+  // This is used to relate links and galleries.
   wrapper.id = "gallery-" + Date.now();
 
   setStyle(wrapper, {
