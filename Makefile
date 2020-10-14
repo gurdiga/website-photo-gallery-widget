@@ -7,4 +7,4 @@ edit:
 e: edit
 
 install:
-	gem install --user-install bundler jekyll jekyll-theme-tactile
+	gem install --user-install bundler jekyll jekyll-theme-slate
