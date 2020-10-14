@@ -118,7 +118,7 @@ function addCloseButton(wrapper) {
     padding: "0.2em 0.5em",
     color: "white",
     fontSize: "2em",
-    zIndex: "2",
+    zIndex: "2"
   });
 
   wrapper.appendChild(closeButton);
@@ -139,7 +139,7 @@ function addScroller(images) {
     display: "flex",
     alignItems: "center",
     background: `rgba(0, 0, 0, ${isSafari ? 0.5 : 0.75})`,
-    height: "100%",
+    height: "100%"
   });
 
   images.forEach((image) => {
@@ -164,7 +164,7 @@ function addWrapper(scroller) {
     left: "0",
     height: "100vh",
     width: "100vw",
-    zIndex: "99999",
+    zIndex: "99999"
   });
 
   wrapper.appendChild(scroller);
@@ -189,7 +189,7 @@ function buildImages(urls) {
       maxWidth: "calc(100vw - 1em * 2)",
       boxSizing: "border-box",
       border: "3px solid silver",
-      zIndex: "1",
+      zIndex: "1"
     });
 
     return image;
