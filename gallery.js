@@ -45,7 +45,10 @@ function main() {
     initialize();
 }
 function initialize() {
-    document.querySelectorAll("a[gallery]").forEach(decorateLink);
+    findGalleryLinks().forEach(decorateLink);
+}
+function findGalleryLinks() {
+    return document.querySelectorAll("a[gallery]");
 }
 function decorateLink(a) {
     var _this = this;
@@ -58,9 +61,9 @@ function decorateLink(a) {
             switch (_a.label) {
                 case 0:
                     event.preventDefault();
-                    gallery = findGallery(a);
+                    gallery = findGalleryForLink(a);
                     if (!gallery) return [3 /*break*/, 1];
-                    displayGallery(gallery);
+                    displayExistingGallery(gallery);
                     return [3 /*break*/, 3];
                 case 1: return [4 /*yield*/, buildGallery(a)];
                 case 2:
@@ -74,7 +77,7 @@ function decorateLink(a) {
 function isLinkDecorated(a) {
     return a.hasAttribute("data-gallery-id");
 }
-function findGallery(a) {
+function findGalleryForLink(a) {
     var galleryId = a.getAttribute("data-gallery-id");
     if (!galleryId) {
         return null;
@@ -82,7 +85,7 @@ function findGallery(a) {
     var gallery = document.getElementById(galleryId);
     return gallery;
 }
-function displayGallery(gallery) {
+function displayExistingGallery(gallery) {
     var initialDisplayValue = gallery.getAttribute("data-initial-display-value");
     if (initialDisplayValue === null) {
         console.warn("displayGallery: gallery has not been initialized.");
@@ -92,32 +95,87 @@ function displayGallery(gallery) {
 }
 function buildGallery(a) {
     return __awaiter(this, void 0, void 0, function () {
-        var imageUrls, images, scroller, wrapper;
+        var _this = this;
+        return __generator(this, function (_a) {
+            withProgressIndicator(a, function () { return __awaiter(_this, void 0, void 0, function () {
+                var gallery, imageUrls, images;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            gallery = prepareGallery();
+                            return [4 /*yield*/, getImageUrls(a)];
+                        case 1:
+                            imageUrls = _a.sent();
+                            images = createImages(imageUrls);
+                            addImagesToGallery(images, gallery);
+                            relateLinkToGallery(a, gallery);
+                            return [2 /*return*/, gallery];
+                    }
+                });
+            }); });
+            return [2 /*return*/];
+        });
+    });
+}
+function getImageUrls(a) {
+    return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    a.style.cursor = "progresss";
-                    return [4 /*yield*/, fetch(a.href)
-                            .then(function (r) { return r.text(); })
-                            .then(extractURLs(a.href))];
-                case 1:
-                    imageUrls = _a.sent();
-                    images = buildImages(imageUrls);
-                    scroller = addScroller(images);
-                    wrapper = addWrapper(scroller);
-                    addCloseButton(wrapper);
-                    appendToPage(wrapper);
-                    a.setAttribute("data-gallery-id", wrapper.id);
-                    a.style.cursor = "pointer";
-                    return [2 /*return*/];
+                case 0: return [4 /*yield*/, fetch(a.href)
+                        .then(function (r) { return r.text(); })
+                        .then(extractURLs(a.href))];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
-function appendToPage(wrapper) {
+function prepareGallery() {
+    var wrapper = createWrapper();
+    var scroller = createScroller();
+    var closeButton = createCloseButtonForWrapper(wrapper);
+    var spinner = createSpinner();
+    scroller.appendChild(spinner);
+    wrapper.appendChild(scroller);
+    wrapper.appendChild(closeButton);
+    return addWrapperToPage(wrapper);
+}
+function createSpinner() {
+    var spinner = document.createElement("div");
+    var className = "gallery-spinner-" + Date.now();
+    spinner.innerText = "Loading images…";
+    spinner.className = className;
+    setStyle(spinner, {
+        color: "white",
+        width: "100%",
+        textAlign: "center"
+    });
+    spinner.insertAdjacentHTML("afterbegin", "<style>." + className + ":not(:only-child) { display: none; }</style>");
+    return spinner;
+}
+function sleep(seconds) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, seconds * 1000);
+    });
+}
+function relateLinkToGallery(a, gallery) {
+    a.setAttribute("data-gallery-id", gallery.id);
+}
+function withProgressIndicator(a, f) {
+    var initialCursor = a.style.cursor;
+    a.style.cursor = "progress";
+    f();
+    a.style.cursor = initialCursor;
+}
+function addImagesToGallery(images, gallery) {
+    var scoller = gallery.firstElementChild;
+    images.forEach(function (image) {
+        scoller.appendChild(image);
+    });
+}
+function addWrapperToPage(wrapper) {
     return document.body.appendChild(wrapper);
 }
-function addCloseButton(wrapper) {
+function createCloseButtonForWrapper(wrapper) {
     var closeButton = document.createElement("button");
     closeButton.textContent = document.characterSet === "UTF-8" ? "×" : "x";
     closeButton.addEventListener("click", function () {
@@ -136,10 +194,9 @@ function addCloseButton(wrapper) {
         fontSize: "2em",
         zIndex: "2"
     });
-    wrapper.appendChild(closeButton);
-    return wrapper;
+    return closeButton;
 }
-function addScroller(images) {
+function createScroller() {
     var scroller = document.createElement("div");
     var isSafari = "safari" in window;
     setStyle(scroller, {
@@ -150,12 +207,9 @@ function addScroller(images) {
         background: "rgba(0, 0, 0, " + (isSafari ? 0.5 : 0.75) + ")",
         height: "100%"
     });
-    images.forEach(function (image) {
-        scroller.appendChild(image);
-    });
     return scroller;
 }
-function addWrapper(scroller) {
+function createWrapper() {
     var wrapper = document.createElement("div");
     // This is used to relate links and galleries.
     wrapper.id = "gallery-" + Date.now();
@@ -167,13 +221,13 @@ function addWrapper(scroller) {
         width: "100vw",
         zIndex: "99999"
     });
-    wrapper.appendChild(scroller);
     return wrapper;
 }
-function buildImages(urls) {
+function createImages(urls) {
     return urls.map(function (url) {
         var image = document.createElement("img");
         image.src = url;
+        image.loading = "lazy";
         setStyle(image, {
             flexShrink: "0",
             margin: "1em",

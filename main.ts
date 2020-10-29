@@ -13,7 +13,11 @@ function main() {
 }
 
 function initialize() {
-  document.querySelectorAll<HTMLAnchorElement>("a[gallery]").forEach(decorateLink);
+  findGalleryLinks().forEach(decorateLink);
+}
+
+function findGalleryLinks(): NodeListOf<HTMLAnchorElement> {
+  return document.querySelectorAll("a[gallery]");
 }
 
 function decorateLink(a: HTMLAnchorElement) {
@@ -24,10 +28,10 @@ function decorateLink(a: HTMLAnchorElement) {
   a.addEventListener("click", async (event) => {
     event.preventDefault();
 
-    const gallery = findGallery(a);
+    const gallery = findGalleryForLink(a);
 
     if (gallery) {
-      displayGallery(gallery);
+      displayExistingGallery(gallery);
     } else {
       await buildGallery(a);
     }
@@ -38,7 +42,7 @@ function isLinkDecorated(a: HTMLAnchorElement): boolean {
   return a.hasAttribute("data-gallery-id");
 }
 
-function findGallery(a: HTMLAnchorElement): HTMLElement | null {
+function findGalleryForLink(a: HTMLAnchorElement): HTMLElement | null {
   const galleryId = a.getAttribute("data-gallery-id");
 
   if (!galleryId) {
@@ -50,7 +54,7 @@ function findGallery(a: HTMLAnchorElement): HTMLElement | null {
   return gallery;
 }
 
-function displayGallery(gallery: HTMLElement) {
+function displayExistingGallery(gallery: HTMLElement) {
   const initialDisplayValue = gallery.getAttribute("data-initial-display-value");
 
   if (initialDisplayValue === null) {
@@ -62,28 +66,87 @@ function displayGallery(gallery: HTMLElement) {
 }
 
 async function buildGallery(a: HTMLAnchorElement) {
-  a.style.cursor = "progresss";
+  withProgressIndicator(a, async () => {
+    const gallery = prepareGallery();
 
-  const imageUrls = await fetch(a.href)
-    .then((r) => r.text())
-    .then(extractURLs(a.href));
+    const imageUrls = await getImageUrls(a);
+    const images = createImages(imageUrls);
 
-  const images = buildImages(imageUrls);
-  const scroller = addScroller(images);
-  const wrapper = addWrapper(scroller);
+    addImagesToGallery(images, gallery);
+    relateLinkToGallery(a, gallery);
 
-  addCloseButton(wrapper);
-  appendToPage(wrapper);
-
-  a.setAttribute("data-gallery-id", wrapper.id);
-  a.style.cursor = "pointer";
+    return gallery;
+  });
 }
 
-function appendToPage(wrapper: HTMLDivElement): HTMLDivElement {
+async function getImageUrls(a: HTMLAnchorElement): Promise<string[]> {
+  return await fetch(a.href)
+    .then((r) => r.text())
+    .then(extractURLs(a.href));
+}
+
+function prepareGallery(): HTMLDivElement {
+  const wrapper = createWrapper();
+  const scroller = createScroller();
+  const closeButton = createCloseButtonForWrapper(wrapper);
+  const spinner = createSpinner();
+
+  scroller.appendChild(spinner);
+  wrapper.appendChild(scroller);
+  wrapper.appendChild(closeButton);
+
+  return addWrapperToPage(wrapper);
+}
+
+function createSpinner(): HTMLElement {
+  const spinner = document.createElement("div");
+  const className = `gallery-spinner-${Date.now()}`;
+
+  spinner.innerText = "Loading images…";
+  spinner.className = className;
+
+  setStyle(spinner, {
+    color: "white",
+    width: "100%",
+    textAlign: "center"
+  });
+
+  spinner.insertAdjacentHTML("afterbegin", `<style>.${className}:not(:only-child) { display: none; }</style>`);
+
+  return spinner;
+}
+
+function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, seconds * 1000);
+  });
+}
+
+function relateLinkToGallery(a: HTMLAnchorElement, gallery: HTMLDivElement): void {
+  a.setAttribute("data-gallery-id", gallery.id);
+}
+
+function withProgressIndicator(a: HTMLAnchorElement, f: () => void) {
+  const initialCursor = a.style.cursor;
+
+  a.style.cursor = "progress";
+  f();
+  a.style.cursor = initialCursor;
+}
+
+function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
+  const scoller = gallery.firstElementChild!;
+
+  images.forEach((image) => {
+    scoller.appendChild(image);
+  });
+}
+
+function addWrapperToPage(wrapper: HTMLDivElement): HTMLDivElement {
   return document.body.appendChild(wrapper);
 }
 
-function addCloseButton(wrapper: HTMLDivElement): HTMLDivElement {
+function createCloseButtonForWrapper(wrapper: HTMLDivElement): HTMLButtonElement {
   const closeButton = document.createElement("button");
 
   closeButton.textContent = document.characterSet === "UTF-8" ? "×" : "x";
@@ -105,12 +168,10 @@ function addCloseButton(wrapper: HTMLDivElement): HTMLDivElement {
     zIndex: "2"
   });
 
-  wrapper.appendChild(closeButton);
-
-  return wrapper;
+  return closeButton;
 }
 
-function addScroller(images: HTMLImageElement[]): HTMLDivElement {
+function createScroller(): HTMLDivElement {
   const scroller = document.createElement("div");
   const isSafari = "safari" in window;
 
@@ -123,14 +184,10 @@ function addScroller(images: HTMLImageElement[]): HTMLDivElement {
     height: "100%"
   });
 
-  images.forEach((image) => {
-    scroller.appendChild(image);
-  });
-
   return scroller;
 }
 
-function addWrapper(scroller: HTMLDivElement): HTMLDivElement {
+function createWrapper(): HTMLDivElement {
   const wrapper = document.createElement("div");
 
   // This is used to relate links and galleries.
@@ -145,16 +202,15 @@ function addWrapper(scroller: HTMLDivElement): HTMLDivElement {
     zIndex: "99999"
   });
 
-  wrapper.appendChild(scroller);
-
   return wrapper;
 }
 
-function buildImages(urls: string[]): HTMLImageElement[] {
+function createImages(urls: string[]): HTMLImageElement[] {
   return urls.map((url) => {
     const image = document.createElement("img");
 
     image.src = url;
+    image.loading = "lazy";
 
     setStyle(image, {
       flexShrink: "0",

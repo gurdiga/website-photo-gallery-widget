@@ -2,6 +2,7 @@ default: watch
 
 watch:
 	tsc --watch
+c: watch
 
 build:
 	tsc
