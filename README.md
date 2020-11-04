@@ -6,4 +6,5 @@ A photo gallery widget for websites. Check usage instructions on the [demo websi
 
 ## TODO
 
-- Add support for inline URLs in the attribute value like `gallery="url1,url2,..."`.
+- Publish to NPM
+- Close on <kbd>Esc</kbd>

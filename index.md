@@ -16,9 +16,30 @@ You can make a slide-show gallery out of the photos in that folder like this:
 <a gallery href="https://sandradodd.com/vlad/">Photos</a>
 ```
 
-So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s it. Here is an example link for the folder mentioned above: <a gallery href="https://sandradodd.com/vlad/">Click me!</a>
+So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s it.
 
-## How does it work?
+> Example: <a gallery href="https://sandradodd.com/vlad/">Gallery</a>.
+
+### Inline image URLs
+
+You can also give it the image URLs inside the `gallery` attribute, like this:
+
+```html
+ <a gallery="
+    https://sandradodd.com/vlad/unsplash-11.jpg
+    https://sandradodd.com/vlad/unsplash-12.jpg
+" href="#">Gallery</a>
+```
+
+NOTE: The `href` attribute is ignored in this case.
+
+> Example: <a gallery="
+    https://sandradodd.com/vlad/unsplash-11.jpg
+    https://sandradodd.com/vlad/unsplash-12.jpg
+" href="#">Gallery</a>
+
+
+## How do I use it?
 
 Include this script in your page:
 

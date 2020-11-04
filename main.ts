@@ -1,242 +1,304 @@
 declare var galleryAlreadyInitialized: boolean;
+declare var runGalleryUnitTests: () => void;
 
-window.addEventListener("DOMContentLoaded", main);
+const UnitTests: { [description: string]: () => void } = {};
 
-function main() {
-  // This is needed because DOMContentLoaded can sometimes be triggered multiple times
-  if (window["galleryAlreadyInitialized"]) {
-    return;
-  }
+(function () {
+  window.addEventListener("DOMContentLoaded", main);
 
-  window["galleryAlreadyInitialized"] = true;
-  initialize();
-}
-
-function initialize() {
-  findGalleryLinks().forEach(initializeLink);
-}
-
-function findGalleryLinks(): NodeListOf<HTMLAnchorElement> {
-  return document.querySelectorAll("a[gallery]");
-}
-
-function initializeLink(a: HTMLAnchorElement) {
-  if (isLinkInitialized(a)) {
-    return;
-  }
-
-  a.addEventListener("click", async (event) => {
-    event.preventDefault();
-
-    const gallery = findGalleryForLink(a);
-
-    if (gallery) {
-      displayExistingGallery(gallery);
-    } else {
-      await buildGallery(a);
+  function main() {
+    // This is needed because DOMContentLoaded can sometimes be triggered multiple times
+    if (window["galleryAlreadyInitialized"]) {
+      return;
     }
-  });
-}
 
-function isLinkInitialized(a: HTMLAnchorElement): boolean {
-  return a.hasAttribute("data-gallery-id");
-}
-
-function findGalleryForLink(a: HTMLAnchorElement): HTMLElement | null {
-  const galleryId = a.getAttribute("data-gallery-id");
-
-  if (!galleryId) {
-    return null;
+    window["galleryAlreadyInitialized"] = true;
+    initialize();
   }
 
-  const gallery = document.getElementById(galleryId);
-
-  return gallery;
-}
-
-function displayExistingGallery(gallery: HTMLElement) {
-  const initialDisplayValue = gallery.getAttribute("data-initial-display-value");
-
-  if (initialDisplayValue === null) {
-    console.warn("displayGallery: gallery has not been initialized.");
-    return;
+  function initialize() {
+    findGalleryLinks().forEach(initializeLink);
   }
 
-  gallery.style.display = initialDisplayValue;
-}
+  function findGalleryLinks(): NodeListOf<HTMLAnchorElement> {
+    return document.querySelectorAll("a[gallery]");
+  }
 
-async function buildGallery(a: HTMLAnchorElement) {
-  withProgressIndicator(a, async () => {
-    const gallery = prepareGallery();
+  function initializeLink(a: HTMLAnchorElement) {
+    if (isLinkInitialized(a)) {
+      return;
+    }
 
-    const imageUrls = await getImageUrls(a);
-    const images = createImages(imageUrls);
+    a.addEventListener("click", async (event) => {
+      event.preventDefault();
 
-    addImagesToGallery(images, gallery);
-    relateLinkToGallery(a, gallery);
+      const gallery = findGalleryForLink(a);
+
+      if (gallery) {
+        displayExistingGallery(gallery);
+      } else {
+        await buildGallery(a);
+      }
+    });
+  }
+
+  function isLinkInitialized(a: HTMLAnchorElement): boolean {
+    return a.hasAttribute("data-gallery-id");
+  }
+
+  function findGalleryForLink(a: HTMLAnchorElement): HTMLElement | null {
+    const galleryId = a.getAttribute("data-gallery-id");
+
+    if (!galleryId) {
+      return null;
+    }
+
+    const gallery = document.getElementById(galleryId);
 
     return gallery;
-  });
-}
+  }
 
-async function getImageUrls(a: HTMLAnchorElement): Promise<string[]> {
-  return await fetch(a.href)
-    .then((r) => r.text())
-    .then(extractURLs(a.href));
-}
+  function displayExistingGallery(gallery: HTMLElement) {
+    const initialDisplayValue = gallery.getAttribute("data-initial-display-value");
 
-function prepareGallery(): HTMLDivElement {
-  const wrapper = createWrapper();
-  const scroller = createScroller();
-  const closeButton = createCloseButtonForWrapper(wrapper);
-  const spinner = createSpinner();
+    if (initialDisplayValue === null) {
+      console.warn("displayGallery: gallery has not been initialized.");
+      return;
+    }
 
-  scroller.appendChild(spinner);
-  wrapper.appendChild(scroller);
-  wrapper.appendChild(closeButton);
+    gallery.style.display = initialDisplayValue;
+  }
 
-  return addWrapperToPage(wrapper);
-}
+  async function buildGallery(a: HTMLAnchorElement) {
+    withProgressIndicator(a, async () => {
+      const gallery = prepareGallery();
 
-function createSpinner(): HTMLElement {
-  const spinner = document.createElement("div");
-  const className = `gallery-spinner-${Date.now()}`;
+      const imageUrls = await getImageUrls(a);
+      const images = createImages(imageUrls);
 
-  spinner.innerText = "Loading images…";
-  spinner.className = className;
+      addImagesToGallery(images, gallery);
+      relateLinkToGallery(a, gallery);
 
-  setStyle(spinner, {
-    color: "white",
-    width: "100%",
-    textAlign: "center"
-  });
+      return gallery;
+    });
+  }
 
-  spinner.insertAdjacentHTML("afterbegin", `<style>.${className}:not(:only-child) { display: none; }</style>`);
+  async function getImageUrls(a: HTMLAnchorElement): Promise<string[]> {
+    const source = a.getAttribute("gallery") || "nginx";
 
-  return spinner;
-}
+    if (source === "nginx") {
+      return await fetch(a.href)
+        .then((r) => r.text())
+        .then(extractURLs(a.href));
+    } else if (isInlineUrlList(source)) {
+      return parseInlineUrlList(source);
+    } else {
+      console.error("Gallery: Unrecognized source %o for link %o", source, a);
 
-function sleep(seconds: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, seconds * 1000);
-  });
-}
+      return [
+        'data:image/svg+xml,<svg viewBox="0 0 45 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="15">Error!</text></svg>'
+      ];
+    }
+  }
 
-function relateLinkToGallery(a: HTMLAnchorElement, gallery: HTMLDivElement): void {
-  a.setAttribute("data-gallery-id", gallery.id);
-}
+  function isInlineUrlList(source: string): boolean {
+    return /^https?:\//.test(source.trim());
+  }
 
-function withProgressIndicator(a: HTMLAnchorElement, f: () => void) {
-  const initialCursor = a.style.cursor;
-
-  a.style.cursor = "progress";
-  f();
-  a.style.cursor = initialCursor;
-}
-
-function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
-  const scroller = gallery.firstElementChild!;
-
-  images.forEach((image) => {
-    scroller.appendChild(image);
-  });
-}
-
-function addWrapperToPage(wrapper: HTMLDivElement): HTMLDivElement {
-  return document.body.appendChild(wrapper);
-}
-
-function createCloseButtonForWrapper(wrapper: HTMLDivElement): HTMLButtonElement {
-  const closeButton = document.createElement("button");
-
-  closeButton.textContent = document.characterSet === "UTF-8" ? "×" : "x";
-  closeButton.addEventListener("click", () => {
-    wrapper.setAttribute("data-initial-display-value", wrapper.style.display);
-    wrapper.style.display = "none";
+  addUnitTests("isInlineUrlList", () => {
+    console.assert(!isInlineUrlList(""), "empty string is not");
+    console.assert(isInlineUrlList("http://something"), "http://something is");
+    console.assert(isInlineUrlList("https://something"), "https://something is");
   });
 
-  setStyle(closeButton, {
-    position: "fixed",
-    top: "0",
-    right: "0",
-    background: "transparent",
-    border: "none",
-    padding: "0.2em 0.5em",
-    color: "white",
-    textShadow: "2px 2px 5px black",
-    fontSize: "2em",
-    zIndex: "2"
+  function parseInlineUrlList(source: string): string[] {
+    return source.trim().split(/[\s]+/);
+  }
+
+  addUnitTests("parseInlineUrlList", () => {
+    const parsed = parseInlineUrlList(`
+      http://url1  
+      http://url2  `);
+
+    console.assert(parsed.length === 2, "2 items");
+    console.assert(parsed[0] === "http://url1", "http://url1");
+    console.assert(parsed[1] === "http://url2", "http://url2");
   });
 
-  return closeButton;
-}
+  function prepareGallery(): HTMLDivElement {
+    const wrapper = createWrapper();
+    const scroller = createScroller();
+    const closeButton = createCloseButtonForWrapper(wrapper);
+    const spinner = createSpinner();
 
-function createScroller(): HTMLDivElement {
-  const scroller = document.createElement("div");
-  const isSafari = "safari" in window;
+    scroller.appendChild(spinner);
+    wrapper.appendChild(scroller);
+    wrapper.appendChild(closeButton);
 
-  setStyle(scroller, {
-    overflow: "scroll",
-    overscrollBehavior: "none",
-    display: "flex",
-    alignItems: "center",
-    background: `rgba(0, 0, 0, ${isSafari ? 0.5 : 0.75})`,
-    height: "100%"
-  });
+    return addWrapperToPage(wrapper);
+  }
 
-  return scroller;
-}
+  function createSpinner(): HTMLElement {
+    const spinner = document.createElement("div");
+    const className = `gallery-spinner-${Date.now()}`;
 
-function createWrapper(): HTMLDivElement {
-  const wrapper = document.createElement("div");
+    spinner.innerText = "Loading images…";
+    spinner.className = className;
 
-  // This is used to relate links and galleries.
-  wrapper.id = "gallery-" + Date.now();
-
-  setStyle(wrapper, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    zIndex: "99999"
-  });
-
-  return wrapper;
-}
-
-function createImages(urls: string[]): HTMLImageElement[] {
-  return urls.map((url) => {
-    const image = document.createElement("img");
-
-    image.src = url;
-    image.loading = "lazy";
-
-    setStyle(image, {
-      flexShrink: "0",
-      margin: "1em",
-      maxHeight: "calc(100vh - 1em * 2)",
-      maxWidth: "calc(100vw - 1em * 2)",
-      boxSizing: "border-box",
-      border: "3px solid silver",
-      zIndex: "1"
+    setStyle(spinner, {
+      color: "white",
+      width: "100%",
+      textAlign: "center"
     });
 
-    return image;
-  });
-}
+    spinner.insertAdjacentHTML("afterbegin", `<style>.${className}:not(:only-child) { display: none; }</style>`);
 
-function extractURLs(baseUrl: string): (s: string) => string[] {
-  return function (s) {
-    const links = new DOMParser().parseFromString(s, "text/html").querySelectorAll("a");
-    const urls = Array.from(links)
-      .map((a) => baseUrl + "/" + a.getAttribute("href"))
-      .filter((url) => !url.endsWith("/"));
+    return spinner;
+  }
 
-    return urls;
+  function sleep(seconds: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, seconds * 1000);
+    });
+  }
+
+  function relateLinkToGallery(a: HTMLAnchorElement, gallery: HTMLDivElement): void {
+    a.setAttribute("data-gallery-id", gallery.id);
+  }
+
+  function withProgressIndicator(a: HTMLAnchorElement, f: () => void) {
+    const initialCursor = a.style.cursor;
+
+    a.style.cursor = "progress";
+    f();
+    a.style.cursor = initialCursor;
+  }
+
+  function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
+    const scroller = gallery.firstElementChild!;
+
+    images.forEach((image) => {
+      scroller.appendChild(image);
+    });
+  }
+
+  function addWrapperToPage(wrapper: HTMLDivElement): HTMLDivElement {
+    return document.body.appendChild(wrapper);
+  }
+
+  function createCloseButtonForWrapper(wrapper: HTMLDivElement): HTMLButtonElement {
+    const closeButton = document.createElement("button");
+
+    closeButton.textContent = document.characterSet === "UTF-8" ? "×" : "x";
+    closeButton.addEventListener("click", () => {
+      wrapper.setAttribute("data-initial-display-value", wrapper.style.display);
+      wrapper.style.display = "none";
+    });
+
+    setStyle(closeButton, {
+      position: "fixed",
+      top: "0",
+      right: "0",
+      background: "transparent",
+      border: "none",
+      padding: "0.2em 0.5em",
+      color: "white",
+      textShadow: "2px 2px 5px black",
+      fontSize: "2em",
+      zIndex: "2"
+    });
+
+    return closeButton;
+  }
+
+  function createScroller(): HTMLDivElement {
+    const scroller = document.createElement("div");
+    const isSafari = "safari" in window;
+
+    setStyle(scroller, {
+      overflow: "scroll",
+      overscrollBehavior: "none",
+      display: "flex",
+      alignItems: "center",
+      background: `rgba(0, 0, 0, ${isSafari ? 0.5 : 0.75})`,
+      height: "100%"
+    });
+
+    return scroller;
+  }
+
+  function createWrapper(): HTMLDivElement {
+    const wrapper = document.createElement("div");
+
+    // This is used to relate links and galleries.
+    wrapper.id = "gallery-" + Date.now();
+
+    setStyle(wrapper, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      height: "100vh",
+      width: "100vw",
+      zIndex: "99999"
+    });
+
+    return wrapper;
+  }
+
+  function createImages(urls: string[]): HTMLImageElement[] {
+    return urls.map((url) => {
+      const image = document.createElement("img");
+
+      image.src = url;
+      image.loading = "lazy";
+
+      setStyle(image, {
+        flexShrink: "0",
+        margin: "1em",
+        maxHeight: "calc(100vh - 1em * 2)",
+        maxWidth: "calc(100vw - 1em * 2)",
+        boxSizing: "border-box",
+        border: "3px solid silver",
+        zIndex: "1"
+      });
+
+      return image;
+    });
+  }
+
+  function extractURLs(baseUrl: string): (s: string) => string[] {
+    return function (s) {
+      const links = new DOMParser().parseFromString(s, "text/html").querySelectorAll("a");
+      const urls = Array.from(links)
+        .map((a) => baseUrl + "/" + a.getAttribute("href"))
+        .filter((url) => !url.endsWith("/"));
+
+      return urls;
+    };
+  }
+
+  function setStyle(el: HTMLElement, style: Partial<CSSStyleDeclaration>) {
+    Object.assign(el.style, style);
+  }
+
+  function addUnitTests(description: string, f: () => void) {
+    UnitTests[description] = () => {
+      console.group(description);
+      f();
+      console.log("OK");
+      console.groupEnd();
+    };
+  }
+
+  window.runGalleryUnitTests = () => {
+    for (const description in UnitTests) {
+      UnitTests[description]();
+    }
   };
-}
 
-function setStyle(el: HTMLElement, style: Partial<CSSStyleDeclaration>) {
-  Object.assign(el.style, style);
-}
+  const isDevelopment = ["127.0.0.1", "localhost"].includes(location.hostname);
+
+  if (isDevelopment) {
+    window.runGalleryUnitTests();
+  }
+})();
