@@ -13,15 +13,15 @@ function main() {
 }
 
 function initialize() {
-  findGalleryLinks().forEach(decorateLink);
+  findGalleryLinks().forEach(initializeLink);
 }
 
 function findGalleryLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll("a[gallery]");
 }
 
-function decorateLink(a: HTMLAnchorElement) {
-  if (isLinkDecorated(a)) {
+function initializeLink(a: HTMLAnchorElement) {
+  if (isLinkInitialized(a)) {
     return;
   }
 
@@ -38,7 +38,7 @@ function decorateLink(a: HTMLAnchorElement) {
   });
 }
 
-function isLinkDecorated(a: HTMLAnchorElement): boolean {
+function isLinkInitialized(a: HTMLAnchorElement): boolean {
   return a.hasAttribute("data-gallery-id");
 }
 
@@ -135,10 +135,10 @@ function withProgressIndicator(a: HTMLAnchorElement, f: () => void) {
 }
 
 function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
-  const scoller = gallery.firstElementChild!;
+  const scroller = gallery.firstElementChild!;
 
   images.forEach((image) => {
-    scoller.appendChild(image);
+    scroller.appendChild(image);
   });
 }
 
