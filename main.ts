@@ -251,6 +251,7 @@ const UnitTests: { [description: string]: () => void } = {};
 
       image.src = url;
       image.loading = "lazy";
+      image.alt = `Image ${url}`;
 
       setStyle(image, {
         flexShrink: "0",
