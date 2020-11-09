@@ -25,7 +25,14 @@ tag:
 	echo git tag -a v$$NEXT_VERSION -m \"Version $$NEXT_VERSION\"
 
 release:
-	npm run release
+	npm run release && \
+	make update-docs
 
 publish:
 	npm publish
+
+update-docs:
+	@VERSION=`jq -r .version package.json` && \
+	sed -E -i "s|/website-photo-gallery-widget@[0-9]+.[0-9]+.[0-9]+/|/website-photo-gallery-widget@$$VERSION/|" index.md && \
+	git commit index.md -m "Update version in docs"
+
