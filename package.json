@@ -5,7 +5,7 @@
   "main": "website-photo-gallery-widget.js",
   "scripts": {
     "build": "tsc",
-    "minify": "uglifyjs website-photo-gallery-widget.js --output website-photo-gallery-widget.min.js --source-map",
+    "minify": "uglifyjs website-photo-gallery-widget.js --source-map url='website-photo-gallery-widget.min.js.map' --compress --output website-photo-gallery-widget.min.js",
     "docs-preview": "jekyll serve --trace",
     "prepare": "npm run build && npm run minify",
     "release": "npm version from-git",
