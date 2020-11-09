@@ -49,7 +49,7 @@ Include this script in your page:
 
 Or get it from NPM:
 
-```
+```shell
 npm install website-photo-gallery-widget
 ```
 
