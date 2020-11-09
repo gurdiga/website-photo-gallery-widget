@@ -20,7 +20,8 @@ install:
 	npm run docs-preview-install
 
 tag:
-	@echo 'VERSION=1.2.3 && git tag -a v$$VERSION -m "Version $$VERSION"'
+	@VERSION=`jq -r .version package.json` && \
+	echo git tag -a v$$VERSION -m \"Version $$VERSION\"
 
 release:
 	npm run release
