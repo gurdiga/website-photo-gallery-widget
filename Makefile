@@ -20,10 +20,7 @@ install:
 	npm run docs-preview-install
 
 tag:
-	@echo "git tag v1.0.0"
-
-tag:
-	@echo git tag -a v0.0.0 -m "Version 0.0.0"
+	@echo 'VERSION=1.2.3 && git tag -a v$$VERSION -m "Version $$VERSION"'
 
 release:
 	npm run release
