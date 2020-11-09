@@ -5,10 +5,10 @@ watch:
 c: watch
 
 build:
-	tsc
+	npm run build
 
 start:
-	jekyll serve --trace
+	npm run docs-preview
 
 edit:
 	code -n .
@@ -16,9 +16,11 @@ edit:
 e: edit
 
 install:
-	gem install --user-install jekyll
+	npm install
+	npm run docs-preview-install
 
 tag:
 	@echo "git tag v1.0.0"
 
-release: tag
+release-patch:
+	npm run release-patch

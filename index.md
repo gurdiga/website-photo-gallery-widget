@@ -44,12 +44,14 @@ NOTE: The `href` attribute is ignored in this case.
 Include this script in your page:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/gurdiga/gallery@v1.0.1/gallery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.0/gallery.min.js"></script>
 ```
 
-You can also host it yourself if you prefer, but using the link above has the added benefit of making it easier to get the most up to date [version][0].
+Or get it from NPM:
 
-[0]: https://github.com/gurdiga/gallery/releases
+```
+npm install website-photo-gallery-widget
+```
 
 ## Technical Notes
 

@@ -1,0 +1,35 @@
+{
+  "name": "website-photo-gallery-widget",
+  "version": "1.0.0",
+  "description": "A photo-gallery widget for websites",
+  "main": "website-photo-gallery-widget.js",
+  "scripts": {
+    "build": "tsc",
+    "minify": "uglifyjs website-photo-gallery-widget.js --output website-photo-gallery-widget.min.js --source-map",
+    "docs-preview": "jekyll serve --trace",
+    "prepare": "npm run build && npm run minify",
+    "release": "npm version from-git",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gurdiga/website-photo-gallery-widget.git"
+  },
+  "keywords": [
+    "website",
+    "photo",
+    "gallery",
+    "widget"
+  ],
+  "author": "Vlad GURDIGA <gurdiga@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gurdiga/website-photo-gallery-widget/issues"
+  },
+  "homepage": "https://github.com/gurdiga/website-photo-gallery-widget#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "4.0.5",
+    "uglify-js": "3.11.5"
+  }
+}

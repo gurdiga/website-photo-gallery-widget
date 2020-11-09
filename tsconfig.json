@@ -2,7 +2,7 @@
   "files": ["main.ts"],
   "compilerOptions": {
     "strict": true,
-    "outFile": "gallery.js",
+    "outFile": "website-photo-gallery-widget.js",
     "target": "es5",
     "lib": ["es2020", "dom"]
   }
