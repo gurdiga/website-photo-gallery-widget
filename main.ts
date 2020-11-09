@@ -251,7 +251,7 @@ const UnitTests: { [description: string]: () => void } = {};
 
       image.src = url;
       image.loading = "lazy";
-      image.alt = `Image ${url}`;
+      image.alt = `Image: ${basename(url)}`;
 
       setStyle(image, {
         flexShrink: "0",
@@ -266,6 +266,14 @@ const UnitTests: { [description: string]: () => void } = {};
       return image;
     });
   }
+
+  function basename(url: string): string {
+    return url.replace(/.*\//, "").replace(/\..*$/, "");
+  }
+
+  addUnitTests("basename", () => {
+    console.assert(basename("http://host/birthday.jpg") === "birthday", "happy path");
+  });
 
   function extractURLs(baseUrl: string): (s: string) => string[] {
     return function (s) {
