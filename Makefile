@@ -22,5 +22,11 @@ install:
 tag:
 	@echo "git tag v1.0.0"
 
-release-patch:
-	npm run release-patch
+tag:
+	@echo git tag -a v0.0.0 -m "Version 0.0.0"
+
+release:
+	npm run release
+
+publish:
+	npm publish
