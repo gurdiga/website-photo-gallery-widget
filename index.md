@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.0/website-photo-gallery-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.3/website-photo-gallery-widget.min.js"></script>
 
 ## Summary
 
@@ -44,7 +44,7 @@ NOTE: The `href` attribute is ignored in this case.
 Include this script in your page:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.0/website-photo-gallery-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.3/website-photo-gallery-widget.min.js"></script>
 ```
 
 Or get it from NPM:
