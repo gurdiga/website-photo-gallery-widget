@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<script src="gallery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.0/website-photo-gallery-widget.min.js"></script>
 
 ## Summary
 
