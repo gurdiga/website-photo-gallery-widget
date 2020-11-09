@@ -21,7 +21,8 @@ install:
 
 tag:
 	@VERSION=`jq -r .version package.json` && \
-	echo git tag -a v$$VERSION -m \"Version $$VERSION\"
+	NEXT_VERSION=`semver $$VERSION -i` && \
+	echo git tag -a v$$NEXT_VERSION -m \"Version $$NEXT_VERSION\"
 
 release:
 	npm run release
