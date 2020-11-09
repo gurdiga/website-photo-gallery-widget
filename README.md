@@ -6,5 +6,5 @@ A photo gallery widget for websites. Check usage instructions on the [demo websi
 
 ## TODO
 
-- Publish to NPM
 - Close on <kbd>Esc</kbd>
+- TBD
