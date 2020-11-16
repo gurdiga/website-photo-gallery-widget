@@ -2,7 +2,12 @@
 layout: default
 ---
 
+{% if jekyll.environment == "development" %}
+<script src="website-photo-gallery-widget.js"></script>
+{% else %}
 <script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.0.4/website-photo-gallery-widget.min.js"></script>
+{% endif %}
+
 
 ## Summary
 
