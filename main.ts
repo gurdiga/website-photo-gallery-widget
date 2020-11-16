@@ -4,7 +4,10 @@ declare var runGalleryUnitTests: () => void;
 const UnitTests: { [description: string]: () => void } = {};
 
 (function () {
-  window.addEventListener("DOMContentLoaded", main);
+  document.addEventListener("DOMContentLoaded", main);
+  document.addEventListener("keydown", ifKey("Escape", closeOpenedGallery));
+
+  const WRAPPER_CLASS_NAME = "website-photo-gallery-widget";
 
   function main() {
     // This is needed because DOMContentLoaded can sometimes be triggered multiple times
@@ -190,10 +193,7 @@ const UnitTests: { [description: string]: () => void } = {};
     const closeButton = document.createElement("button");
 
     closeButton.textContent = document.characterSet === "UTF-8" ? "×" : "x";
-    closeButton.addEventListener("click", () => {
-      wrapper.setAttribute("data-initial-display-value", wrapper.style.display);
-      wrapper.style.display = "none";
-    });
+    closeButton.addEventListener("click", () => closeGallery(wrapper));
 
     setStyle(closeButton, {
       position: "fixed",
@@ -209,6 +209,11 @@ const UnitTests: { [description: string]: () => void } = {};
     });
 
     return closeButton;
+  }
+
+  function closeGallery(wrapper: HTMLDivElement): void {
+    wrapper.setAttribute("data-initial-display-value", wrapper.style.display);
+    wrapper.style.display = "none";
   }
 
   function createScroller(): HTMLDivElement {
@@ -232,6 +237,7 @@ const UnitTests: { [description: string]: () => void } = {};
 
     // This is used to relate links and galleries.
     wrapper.id = "gallery-" + Date.now();
+    wrapper.className = WRAPPER_CLASS_NAME;
 
     setStyle(wrapper, {
       position: "fixed",
@@ -289,6 +295,32 @@ const UnitTests: { [description: string]: () => void } = {};
   function setStyle(el: HTMLElement, style: Partial<CSSStyleDeclaration>) {
     Object.assign(el.style, style);
   }
+
+  function closeOpenedGallery() {
+    const gallery = findOpenGallery();
+
+    if (!gallery) {
+      return;
+    }
+
+    closeGallery(gallery);
+  }
+
+  function findOpenGallery(): HTMLDivElement | undefined {
+    const galleries: NodeListOf<HTMLDivElement> = document.querySelectorAll(`.${WRAPPER_CLASS_NAME}`);
+    const isNotHidden = (div: HTMLDivElement) => div.style.display !== "none";
+    const gallery = Array.from(galleries).find(isNotHidden);
+
+    return gallery;
+  }
+
+  function ifKey(keyName: string, handler: (event?: KeyboardEvent) => void) {
+    return (event: KeyboardEvent) => {
+      if (event.key === keyName) handler(event);
+    };
+  }
+
+  // Unit tests infrastructure
 
   function addUnitTests(description: string, f: () => void) {
     UnitTests[description] = () => {
