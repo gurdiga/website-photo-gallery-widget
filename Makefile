@@ -1,3 +1,5 @@
+.ONESHELL:
+
 default: watch
 
 watch:
@@ -19,10 +21,11 @@ install:
 	npm install
 	npm run docs-preview-install
 
-tag:
-	@VERSION=`jq -r .version package.json` && \
-	NEXT_VERSION=`semver $$VERSION -i` && \
-	echo git tag -a v$$NEXT_VERSION -m \"Version $$NEXT_VERSION\"
+tag-minor:
+	set -x
+	VERSION=`jq -r .version package.json` && \
+	NEXT_VERSION=`semver --increment minor $$VERSION` && \
+	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
 release:
 	npm run release && \
