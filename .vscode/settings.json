@@ -8,5 +8,11 @@
         "editor.tabSize": 2,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true
+    },
+    "search.exclude": {
+      "_site/": true,
+      ".bundle": true,
+      ".jekyll-cache": true,
+      "vendor/": true
     }
 }
