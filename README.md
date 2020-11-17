@@ -6,6 +6,6 @@ Check usage instructions and demo on [the website][1].
 
 ## TODO
 
-- On release: Update version number on the website.
+- Add support for Apache auto-indexed folders.
 - Generic mechanism to get image URLs.
 - TBD
