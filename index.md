@@ -58,8 +58,8 @@ Or get it from NPM:
 npm install website-photo-gallery-widget
 ```
 
-## Technical Notes
+## Technical Notes for auto-indexed folders
 
-If the page containing the gallery link and the folder with photos are hosted on different servers, the server hosting the photos has to have [CORS][1] enabled for the server hosting the page.
+If the photos come from an auto-indexed folder, and the folder lives on a different server, that server needs to allow [CORS][1] access for the widget to be able to fetch the list of photos.
 
 [1]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
