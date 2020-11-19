@@ -58,7 +58,7 @@ Or get it from NPM:
 npm install website-photo-gallery-widget
 ```
 
-## Technical Notes for auto-indexed folders
+## A (technical) note for auto-indexed folders
 
 If the photos come from an auto-indexed folder, and the folder lives on a different server, that server needs to allow [CORS][1] access for the widget to be able to fetch the list of photos.
 
