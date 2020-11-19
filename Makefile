@@ -22,13 +22,13 @@ install:
 	npm run docs-preview-install
 
 tag-minor:
-	set -x
+	@set -x
 	VERSION=`jq -r .version package.json` && \
 	NEXT_VERSION=`semver --increment minor $$VERSION` && \
 	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
 tag-patch:
-	set -x
+	@set -x
 	VERSION=`jq -r .version package.json` && \
 	NEXT_VERSION=`semver --increment patch $$VERSION` && \
 	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
