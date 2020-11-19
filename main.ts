@@ -86,24 +86,30 @@ const UnitTests: { [description: string]: () => void } = {};
 
   async function getImageUrls(a: HTMLAnchorElement): Promise<string[]> {
     const source = a.getAttribute("gallery") || "nginx";
+    let urls: string[];
 
     if (source === "nginx") {
-      return await fetch(a.href)
+      urls = await fetch(a.href)
         .then((r) => r.text())
         .then(extractNginxURLs(a.href));
     } else if (source === "apache") {
-      return await fetch(a.href)
+      urls = await fetch(a.href)
         .then((r) => r.text())
         .then(extractApacheURLs(a.href));
     } else if (isInlineUrlList(source)) {
-      return parseInlineUrlList(source);
+      urls = parseInlineUrlList(source);
     } else {
       console.error("Gallery: Unrecognized source %o for link %o", source, a);
 
-      return [
-        'data:image/svg+xml,<svg viewBox="0 0 45 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="15">Error!</text></svg>'
+      urls = [
+        'data:image/svg+xml,<svg viewBox="0 0 45 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="15" fill="red">Error!</text></svg>'
       ];
     }
+
+    const noImageText =
+      'data:image/svg+xml,<svg viewBox="0 0 80 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="14" fill="red">No images!</text></svg>';
+
+    return urls.length > 0 ? urls : [noImageText];
   }
 
   function isInlineUrlList(source: string): boolean {
