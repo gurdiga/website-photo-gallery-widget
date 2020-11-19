@@ -27,9 +27,16 @@ tag-minor:
 	NEXT_VERSION=`semver --increment minor $$VERSION` && \
 	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
+tag-patch:
+	set -x
+	VERSION=`jq -r .version package.json` && \
+	NEXT_VERSION=`semver --increment patch $$VERSION` && \
+	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
+
 release:
 	npm run release && \
-	make update-docs
+	make update-docs && \
+	make publish
 
 publish:
 	npm publish
