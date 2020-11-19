@@ -73,17 +73,15 @@ const UnitTests: { [description: string]: () => void } = {};
   }
 
   async function buildGallery(a: HTMLAnchorElement) {
-    withProgressIndicator(a, async () => {
-      const gallery = prepareGallery();
+    const gallery = prepareGallery();
 
-      const imageUrls = await getImageUrls(a);
-      const images = createImages(imageUrls);
+    const imageUrls = await getImageUrls(a);
+    const images = createImages(imageUrls);
 
-      addImagesToGallery(images, gallery);
-      relateLinkToGallery(a, gallery);
+    addImagesToGallery(images, gallery);
+    relateLinkToGallery(a, gallery);
 
-      return gallery;
-    });
+    return gallery;
   }
 
   async function getImageUrls(a: HTMLAnchorElement): Promise<string[]> {
@@ -171,14 +169,6 @@ const UnitTests: { [description: string]: () => void } = {};
 
   function relateLinkToGallery(a: HTMLAnchorElement, gallery: HTMLDivElement): void {
     a.setAttribute("data-gallery-id", gallery.id);
-  }
-
-  function withProgressIndicator(a: HTMLAnchorElement, f: () => void) {
-    const initialCursor = a.style.cursor;
-
-    a.style.cursor = "progress";
-    f();
-    a.style.cursor = initialCursor;
   }
 
   function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
