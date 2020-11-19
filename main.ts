@@ -92,7 +92,11 @@ const UnitTests: { [description: string]: () => void } = {};
     if (source === "nginx") {
       return await fetch(a.href)
         .then((r) => r.text())
-        .then(extractURLs(a.href));
+        .then(extractNginxURLs(a.href));
+    } else if (source === "apache") {
+      return await fetch(a.href)
+        .then((r) => r.text())
+        .then(extractApacheURLs(a.href));
     } else if (isInlineUrlList(source)) {
       return parseInlineUrlList(source);
     } else {
@@ -274,19 +278,41 @@ const UnitTests: { [description: string]: () => void } = {};
   }
 
   function basename(url: string): string {
-    return url.replace(/.*\//, "").replace(/\..*$/, "");
+    const happyPath = url.replace(/.*\//, "").replace(/\..*$/, "");
+    const fallback = url.replace(/.*\//, "");
+
+    return happyPath || fallback;
   }
 
   addUnitTests("basename", () => {
     console.assert(basename("http://host/birthday.jpg") === "birthday", "happy path");
   });
 
-  function extractURLs(baseUrl: string): (s: string) => string[] {
+  function extractNginxURLs(baseUrl: string): (s: string) => string[] {
     return function (s) {
       const links = new DOMParser().parseFromString(s, "text/html").querySelectorAll("a");
       const urls = Array.from(links)
         .map((a) => baseUrl + "/" + a.getAttribute("href"))
         .filter((url) => !url.endsWith("/"));
+
+      return urls;
+    };
+  }
+
+  function extractApacheURLs(baseUrl: string): (s: string) => string[] {
+    return function (s) {
+      const links = new DOMParser().parseFromString(s, "text/html").querySelectorAll("a");
+
+      const extractHref = (a: HTMLAnchorElement) => a.getAttribute("href")!;
+      const excludeParentDirectoryLink = (href: string) => !href.endsWith("/");
+      const excludeOrderLinks = (href: string) => !href.startsWith("?");
+      const fullUrl = (href: string) => baseUrl + "/" + href;
+
+      const urls = Array.from(links)
+        .map(extractHref)
+        .filter(excludeParentDirectoryLink)
+        .filter(excludeOrderLinks)
+        .map(fullUrl);
 
       return urls;
     };
