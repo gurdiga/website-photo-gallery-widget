@@ -5,7 +5,7 @@ layout: default
 {% if jekyll.environment == "development" %}
 <script src="website-photo-gallery-widget.js"></script>
 {% else %}
-<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.0/website-photo-gallery-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.1/website-photo-gallery-widget.min.js"></script>
 {% endif %}
 
 
@@ -49,7 +49,7 @@ NOTE: The `href` attribute is ignored in this case.
 Include this script in your page:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.0/website-photo-gallery-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.1/website-photo-gallery-widget.min.js"></script>
 ```
 
 Or get it from NPM:
