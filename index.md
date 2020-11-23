@@ -8,7 +8,6 @@ layout: default
 <script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.2/website-photo-gallery-widget.min.js"></script>
 {% endif %}
 
-
 ## Summary
 
 Suppose you have a folder with images somewhere, auto-indexed with `nginx`, like this one:
@@ -24,6 +23,24 @@ You can make a slide-show gallery out of the photos in that folder like this:
 So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s it.
 
 > Example: <a gallery href="https://sandradodd.com/vlad/">Gallery</a>.
+
+### Apache auto-indexed folder
+
+It can work the same way with an auto-indexed Apache-hosted folder: you just give the `gallery` attribute the value of "apache".
+
+```html
+<a gallery="apache" href="https://example.com/vlad/">Gallery</a>
+```
+
+### Advanced: Custom URL loader function
+
+You can also define a custom function that returns the image URLs.
+
+```html
+<a gallery="customLoaderFunction:loadUrls" href="#">Gallery</a>
+```
+
+This setup expects the global `loadUrls` function to exist, and return an array of strings, or a promise of an array of strings. The loader function will receive the gallery link element as its argument.
 
 ### Inline image URLs
 

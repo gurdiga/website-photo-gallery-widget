@@ -9,6 +9,11 @@ const UnitTests: { [description: string]: () => void } = {};
 
   const WRAPPER_CLASS_NAME = "website-photo-gallery-widget";
 
+  const ERROR_SVG_TEXT =
+    'data:image/svg+xml,<svg viewBox="0 0 45 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="15" fill="red">Error!</text></svg>';
+  const NO_IMAGE_TEXT =
+    'data:image/svg+xml,<svg viewBox="0 0 80 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="14" fill="red">No images!</text></svg>';
+
   function main() {
     // This is needed because DOMContentLoaded can sometimes be triggered multiple times
     if (window["galleryAlreadyInitialized"]) {
@@ -98,19 +103,78 @@ const UnitTests: { [description: string]: () => void } = {};
         .then(extractApacheURLs(a.href));
     } else if (isInlineUrlList(source)) {
       urls = parseInlineUrlList(source);
+    } else if (isCustomLoaderFunction(source)) {
+      urls = await loadUrlsUsingCustomLoaderFunction(source, a);
     } else {
-      console.error("Gallery: Unrecognized source %o for link %o", source, a);
+      console.error("Website photo gallery widget: Unrecognized source %o for link %o", source, a);
 
-      urls = [
-        'data:image/svg+xml,<svg viewBox="0 0 45 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="15" fill="red">Error!</text></svg>'
-      ];
+      urls = [ERROR_SVG_TEXT];
     }
 
-    const noImageText =
-      'data:image/svg+xml,<svg viewBox="0 0 80 18" xmlns="http://www.w3.org/2000/svg"><text x="3" y="14" fill="red">No images!</text></svg>';
-
-    return urls.length > 0 ? urls : [noImageText];
+    return urls.length > 0 ? urls : [NO_IMAGE_TEXT];
   }
+
+  async function loadUrlsUsingCustomLoaderFunction(source: string, a: HTMLAnchorElement): Promise<string[]> {
+    const loaderFunctionName = getCustomLoaderFunctionName(source);
+
+    if (!loaderFunctionName) {
+      return [ERROR_SVG_TEXT];
+    }
+
+    const loaderFunction = (window as any)[loaderFunctionName] as any;
+
+    if (!loaderFunction) {
+      console.error(
+        `Website photo gallery widget: Custom loader function '${loaderFunctionName}' not found in the global scope`
+      );
+      return [ERROR_SVG_TEXT];
+    }
+
+    if (!(loaderFunction instanceof Function)) {
+      console.error(
+        `Website photo gallery widget: Custom loader: '${loaderFunctionName}' in the global scope is not a function`
+      );
+      return [ERROR_SVG_TEXT];
+    }
+
+    try {
+      return (await loaderFunction(a)) as string[];
+    } catch (error) {
+      console.error(`Website photo gallery widget: custom loader function trew error: %o`, error);
+      return [ERROR_SVG_TEXT];
+    }
+  }
+
+  function getCustomLoaderFunctionName(source: string): string | undefined {
+    const match = source.trim().match(/^customLoaderFunction:(\w+)$/);
+
+    if (!match) {
+      console.error(`Website photo gallery widget: Invalid custom loader function spec: '${source}'`);
+      return;
+    }
+
+    const name = match[1];
+
+    if (!name) {
+      console.error(`Website photo gallery widget: Invalid custom loader function spec: missing name`);
+      return;
+    }
+
+    return name;
+  }
+
+  function isCustomLoaderFunction(source: string): boolean {
+    return /^customLoaderFunction:\w+$/.test(source.trim());
+  }
+
+  addUnitTests("isCustomLoaderFunction", () => {
+    console.assert(!isCustomLoaderFunction(""), "empty string is not");
+    console.assert(!isCustomLoaderFunction("customLoaderFunction:"), "'isCustomLoaderFunction:' is not");
+    console.assert(
+      isCustomLoaderFunction("customLoaderFunction:LoadMyPhotos"),
+      "isCustomLoaderFunction:LoadMyPhotos is"
+    );
+  });
 
   function isInlineUrlList(source: string): boolean {
     return /^https?:\//.test(source.trim());
