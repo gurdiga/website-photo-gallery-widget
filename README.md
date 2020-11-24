@@ -6,5 +6,5 @@ Check usage instructions and demo on [the website][1].
 
 ## TODO
 
-- Generic mechanism to get image URLs.
+- Load (insert) images as needed, not all at once.
 - TBD
