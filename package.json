@@ -1,6 +1,6 @@
 {
   "name": "website-photo-gallery-widget",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "A photo-gallery widget for websites",
   "main": "website-photo-gallery-widget.js",
   "scripts": {
