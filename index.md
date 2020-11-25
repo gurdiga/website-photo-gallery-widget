@@ -8,6 +8,12 @@ layout: default
 <script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.1.3/website-photo-gallery-widget.min.js"></script>
 {% endif %}
 
+<style>
+a[gallery] {
+  font-weight: bold;
+}
+</style>
+
 ## Summary
 
 Suppose you have a folder with images somewhere, auto-indexed with `nginx`, like this one:
@@ -22,7 +28,7 @@ You can make a slide-show gallery out of the photos in that folder like this:
 
 So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s it.
 
-> Example: <a gallery href="https://sandradodd.com/vlad/">Gallery</a>.
+> Live example: <a gallery href="https://sandradodd.com/vlad/">Gallery</a>.
 
 ### Apache auto-indexed folder
 
@@ -42,6 +48,28 @@ You can also define a custom function that returns the image URLs.
 
 This setup expects the global `loadUrls` function to exist, and return an array of strings, or a promise of an array of strings. The loader function will receive the gallery link element as its argument.
 
+> Live example: <a gallery="customLoaderFunction:loadUrls" href="https://sandradodd.com/vlad/">Gallery</a>. Where `loadUrls` is this function:
+
+```js
+function loadUrls() {
+  return Promise.resolve([
+    "https://sandradodd.com/vlad/unsplash-07.jpg",
+    "https://sandradodd.com/vlad/unsplash-08.jpg"
+  ]);
+}
+```
+
+<script>
+function loadUrls() {
+  return Promise.resolve([
+    "https://sandradodd.com/vlad/unsplash-07.jpg",
+    "https://sandradodd.com/vlad/unsplash-08.jpg"
+  ]);
+}
+</script>
+
+If you want to have multiple galleries on the same page, you’ll have to have different functions for each one.
+
 ### Inline image URLs
 
 You can also give it the image URLs inside the `gallery` attribute, like this:
@@ -55,7 +83,7 @@ You can also give it the image URLs inside the `gallery` attribute, like this:
 
 NOTE: The `href` attribute is ignored in this case.
 
-> Example: <a gallery="
+> Live example: <a gallery="
     https://sandradodd.com/vlad/unsplash-11.jpg
     https://sandradodd.com/vlad/unsplash-12.jpg
 " href="#">Gallery</a>
