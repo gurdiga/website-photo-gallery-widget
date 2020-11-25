@@ -106,7 +106,7 @@ const UnitTests: { [description: string]: () => void } = {};
     } else if (isCustomLoaderFunction(source)) {
       urls = await loadUrlsUsingCustomLoaderFunction(source, a);
     } else {
-      console.error("Website photo gallery widget: Unrecognized source %o for link %o", source, a);
+      logError("Unrecognized source %o for link %o", source, a);
 
       urls = [ERROR_SVG_TEXT];
     }
@@ -124,23 +124,19 @@ const UnitTests: { [description: string]: () => void } = {};
     const loaderFunction = (window as any)[loaderFunctionName] as any;
 
     if (!loaderFunction) {
-      console.error(
-        `Website photo gallery widget: Custom loader function '${loaderFunctionName}' not found in the global scope`
-      );
+      logError(`Custom loader function '${loaderFunctionName}' not found in the global scope`);
       return [ERROR_SVG_TEXT];
     }
 
     if (!(loaderFunction instanceof Function)) {
-      console.error(
-        `Website photo gallery widget: Custom loader: '${loaderFunctionName}' in the global scope is not a function`
-      );
+      logError(`Custom loader: '${loaderFunctionName}' in the global scope is not a function`);
       return [ERROR_SVG_TEXT];
     }
 
     try {
       return (await loaderFunction(a)) as string[];
     } catch (error) {
-      console.error(`Website photo gallery widget: custom loader function trew error: %o`, error);
+      logError(`Custom loader function trew error: %o`, error);
       return [ERROR_SVG_TEXT];
     }
   }
@@ -149,14 +145,14 @@ const UnitTests: { [description: string]: () => void } = {};
     const match = source.trim().match(/^customLoaderFunction:(\w+)$/);
 
     if (!match) {
-      console.error(`Website photo gallery widget: Invalid custom loader function spec: '${source}'`);
+      logError(`Invalid custom loader function spec: '${source}'`);
       return;
     }
 
     const name = match[1];
 
     if (!name) {
-      console.error(`Website photo gallery widget: Invalid custom loader function spec: missing name`);
+      logError(`Invalid custom loader function spec: missing name`);
       return;
     }
 
@@ -229,12 +225,6 @@ const UnitTests: { [description: string]: () => void } = {};
     spinner.insertAdjacentHTML("afterbegin", `<style>.${className}:not(:only-child) { display: none; }</style>`);
 
     return spinner;
-  }
-
-  function sleep(seconds: number): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(resolve, seconds * 1000);
-    });
   }
 
   function relateLinkToGallery(a: HTMLAnchorElement, gallery: HTMLDivElement): void {
@@ -404,6 +394,16 @@ const UnitTests: { [description: string]: () => void } = {};
     return (event: KeyboardEvent) => {
       if (event.key === keyName) handler(event);
     };
+  }
+
+  function logError(...args: any[]): void {
+    console.error("Website photo gallery widget:", ...args);
+  }
+
+  function sleep(seconds: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, seconds * 1000);
+    });
   }
 
   // Unit tests infrastructure
