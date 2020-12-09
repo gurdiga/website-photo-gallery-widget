@@ -108,3 +108,8 @@ npm install website-photo-gallery-widget
 If the photos come from an auto-indexed folder, and the folder lives on a different server, that server needs to allow [CORS][1] access for the widget to be able to fetch the list of photos.
 
 [1]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+
+
+## Questions? Comments?
+
+Post them on our discussion board: https://github.com/gurdiga/website-photo-gallery-widget/discussions.
