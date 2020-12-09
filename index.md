@@ -110,6 +110,6 @@ If the photos come from an auto-indexed folder, and the folder lives on a differ
 [1]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 
 
-## Questions? Comments?
+## Questions? Ideas? Comments?
 
 Post them on our discussion board: https://github.com/gurdiga/website-photo-gallery-widget/discussions.
