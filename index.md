@@ -112,6 +112,6 @@ If the photos come from an auto-indexed folder, and the folder lives on a differ
 
 ## Questions? Ideas? Comments?
 
-Post them on [our discussion board][2]!.
+Post them on [our discussion board][2]!
 
 [2]: https://github.com/gurdiga/website-photo-gallery-widget/discussions
