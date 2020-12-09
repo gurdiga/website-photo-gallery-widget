@@ -48,7 +48,9 @@ You can also define a custom function that returns the image URLs.
 
 This setup expects the global `loadUrls` function to exist, and return an array of strings, or a promise of an array of strings. The loader function will receive the gallery link element as its argument.
 
-> Live example: <a gallery="customLoaderFunction:loadUrls" href="https://sandradodd.com/vlad/">Gallery</a>. Where `loadUrls` is this function:
+> Live example: <a gallery="customLoaderFunction:loadUrls" href="https://sandradodd.com/vlad/">Gallery</a>.
+
+Here `loadUrls` is this function:
 
 ```js
 function loadUrls() {
