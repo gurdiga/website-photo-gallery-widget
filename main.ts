@@ -3,6 +3,8 @@ declare var runGalleryUnitTests: () => void;
 
 const UnitTests: { [description: string]: () => void } = {};
 
+const VIDEO_EXTENSIONS = ["mp4", "mov", "avi", "ogg", "wmv", "webm"];
+
 (function () {
   document.addEventListener("DOMContentLoaded", main);
   document.addEventListener("keydown", ifKey("Escape", closeOpenedGallery));
@@ -81,7 +83,7 @@ const UnitTests: { [description: string]: () => void } = {};
     const gallery = prepareGallery();
 
     const imageUrls = await getImageUrls(a);
-    const images = createImages(imageUrls);
+    const images = createFrames(imageUrls);
 
     addImagesToGallery(images, gallery);
     relateLinkToGallery(a, gallery);
@@ -231,7 +233,7 @@ const UnitTests: { [description: string]: () => void } = {};
     a.setAttribute("data-gallery-id", gallery.id);
   }
 
-  function addImagesToGallery(images: HTMLImageElement[], gallery: HTMLDivElement): void {
+  function addImagesToGallery(images: GalleryFrame[], gallery: HTMLDivElement): void {
     const scroller = gallery.firstElementChild!;
 
     images.forEach((image) => {
@@ -305,15 +307,14 @@ const UnitTests: { [description: string]: () => void } = {};
     return wrapper;
   }
 
-  function createImages(urls: string[]): HTMLImageElement[] {
+  type GalleryFrame = HTMLImageElement | HTMLVideoElement;
+
+  function createFrames(urls: string[]): GalleryFrame[] {
     return urls.map((url) => {
-      const image = document.createElement("img");
+      const fileExtension = url.split(".").slice(-1)[0];
+      const frame = VIDEO_EXTENSIONS.includes(fileExtension) ? createVideoFrame(url) : createImageFrame(url);
 
-      image.src = url;
-      image.loading = "lazy";
-      image.alt = `Image: ${basename(url)}`;
-
-      setStyle(image, {
+      setStyle(frame, {
         flexShrink: "0",
         margin: "1em",
         maxHeight: "calc(100vh - 1em * 2)",
@@ -323,8 +324,30 @@ const UnitTests: { [description: string]: () => void } = {};
         zIndex: "1"
       });
 
-      return image;
+      return frame;
     });
+  }
+
+  function createVideoFrame(url: string): HTMLVideoElement {
+    const video = document.createElement("video") as HTMLVideoElement;
+    const source = document.createElement("source") as HTMLSourceElement;
+
+    source.src = url;
+
+    video.controls = true;
+    video.appendChild(source);
+
+    return video;
+  }
+
+  function createImageFrame(url: string): HTMLImageElement {
+    const image = document.createElement("img");
+
+    image.src = url;
+    image.loading = "lazy";
+    image.alt = `Image: ${basename(url)}`;
+
+    return image;
   }
 
   function basename(url: string): string {

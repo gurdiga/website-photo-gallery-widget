@@ -16,11 +16,11 @@ a[gallery] {
 
 ## Summary
 
-Suppose you have a folder with images somewhere, auto-indexed with `nginx`, like this one:
+Suppose you have a folder with images and videos somewhere, auto-indexed with `nginx`, like this one:
 
 <a href="https://sandradodd.com/vlad/">https://sandradodd.com/vlad/</a>
 
-You can make a slide-show gallery out of the photos in that folder like this:
+You can make a slide-show gallery out of the photos and videos in that folder like this:
 
 ```html
 <a gallery href="https://sandradodd.com/vlad/">Photos</a>
@@ -40,7 +40,7 @@ It can work the same way with an auto-indexed Apache-hosted folder: you just giv
 
 ### Advanced: Custom URL loader function
 
-You can also define a custom function that returns the image URLs.
+You can also define a custom function that returns the image and video URLs.
 
 ```html
 <a gallery="customLoaderFunction:loadUrls" href="#">Gallery</a>
