@@ -10,7 +10,7 @@ build:
 	npm run build
 
 start:
-	npm run docs-preview
+	JEKYLL_ENV=development npm run docs-preview
 
 edit:
 	code -n .
