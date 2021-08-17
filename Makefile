@@ -25,13 +25,13 @@ tag-minor:
 	@set -x
 	VERSION=`jq -r .version package.json` && \
 	NEXT_VERSION=`semver --increment minor $$VERSION` && \
-	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
+	git tag -a $$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
 tag-patch:
 	@set -x
 	VERSION=`jq -r .version package.json` && \
 	NEXT_VERSION=`semver --increment patch $$VERSION` && \
-	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
+	git tag -a $$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
 release:
 	npm run release && \
