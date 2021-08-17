@@ -33,6 +33,7 @@ tag-patch:
 	NEXT_VERSION=`semver --increment patch $$VERSION` && \
 	git tag -a v$$NEXT_VERSION -m "Version $$NEXT_VERSION"
 
+# Before this, make tag-patch or tag-minor
 release:
 	npm run release && \
 	make update-docs && \
