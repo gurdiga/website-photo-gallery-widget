@@ -18,7 +18,7 @@ a[gallery] {
 
 Suppose you have a folder with images and videos somewhere, auto-indexed with `nginx`, like this one:
 
-<a href="https://sandradodd.com/vlad/">https://sandradodd.com/vlad/</a>
+<a href="https://sandradodd.com/vlad/sample-images/">https://sandradodd.com/vlad/sample-images/</a>
 
 You can make a slide-show gallery out of the photos and videos in that folder like this:
 
