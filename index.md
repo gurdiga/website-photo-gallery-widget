@@ -23,19 +23,19 @@ Suppose you have a folder with images and videos somewhere, auto-indexed with `n
 You can make a slide-show gallery out of the photos and videos in that folder like this:
 
 ```html
-<a gallery href="https://sandradodd.com/vlad/">Photos</a>
+<a gallery href="https://sandradodd.com/vlad/sample-images/">Photos</a>
 ```
 
 So, it’s just a normal `<a>` tag, except for the `gallery` attribute. That’s it.
 
-> Live example: <a gallery href="https://sandradodd.com/vlad/">Gallery</a>.
+> Live example: <a gallery href="https://sandradodd.com/vlad/sample-images/">Gallery</a>.
 
 ### Apache auto-indexed folder
 
 It can work the same way with an auto-indexed Apache-hosted folder: you just give the `gallery` attribute the value of "apache".
 
 ```html
-<a gallery="apache" href="https://example.com/vlad/">Gallery</a>
+<a gallery="apache" href="https://example.com/vlad/sample-images/">Gallery</a>
 ```
 
 ### Advanced: Custom URL loader function
@@ -48,15 +48,16 @@ You can also define a custom function that returns the image and video URLs.
 
 This setup expects the global `loadUrls` function to exist, and return an array of strings, or a promise of an array of strings. The loader function will receive the gallery link element as its argument.
 
-> Live example: <a gallery="customLoaderFunction:loadUrls" href="https://sandradodd.com/vlad/">Gallery</a>.
+> Live example: <a gallery="customLoaderFunction:loadUrls" href="https://sandradodd.com/vlad/sample-images/">Gallery</a>.
 
 Here `loadUrls` is this function:
 
 ```js
 function loadUrls() {
   return Promise.resolve([
-    "https://sandradodd.com/vlad/unsplash-07.jpg",
-    "https://sandradodd.com/vlad/unsplash-08.jpg"
+    "https://sandradodd.com/vlad/sample-images/pexels-yunus-tug%CC%86-15036477.jpg",
+    "https://sandradodd.com/vlad/sample-images/pexels-lyn-ryan-18057909.jpg",
+    "https://sandradodd.com/vlad/sample-images/pexels-luca-dross-10990181.jpg"
   ]);
 }
 ```
@@ -64,8 +65,9 @@ function loadUrls() {
 <script>
 function loadUrls() {
   return Promise.resolve([
-    "https://sandradodd.com/vlad/unsplash-07.jpg",
-    "https://sandradodd.com/vlad/unsplash-08.jpg"
+    "https://sandradodd.com/vlad/sample-images/pexels-yunus-tug%CC%86-15036477.jpg",
+    "https://sandradodd.com/vlad/sample-images/pexels-lyn-ryan-18057909.jpg",
+    "https://sandradodd.com/vlad/sample-images/pexels-luca-dross-10990181.jpg"
   ]);
 }
 </script>
@@ -78,16 +80,18 @@ You can also give it the image URLs inside the `gallery` attribute, like this:
 
 ```html
  <a gallery="
-    https://sandradodd.com/vlad/unsplash-11.jpg
-    https://sandradodd.com/vlad/unsplash-12.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-yunus-tug%CC%86-15036477.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-lyn-ryan-18057909.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-luca-dross-10990181.jpg
 " href="#">Gallery</a>
 ```
 
 NOTE: The `href` attribute is ignored in this case.
 
 > Live example: <a gallery="
-    https://sandradodd.com/vlad/unsplash-11.jpg
-    https://sandradodd.com/vlad/unsplash-12.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-yunus-tug%CC%86-15036477.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-lyn-ryan-18057909.jpg
+    https://sandradodd.com/vlad/sample-images/pexels-luca-dross-10990181.jpg
 " href="#">Gallery</a>
 
 
