@@ -103,7 +103,9 @@ Include this script in your page:
 <script src="https://cdn.jsdelivr.net/npm/website-photo-gallery-widget@1.4.2/website-photo-gallery-widget.min.js"></script>
 ```
 
-Or get it from NPM:
+Or get it [from NPM][npm]:
+
+[npm]: https://www.npmjs.com/package/website-photo-gallery-widget
 
 ```shell
 npm install website-photo-gallery-widget
