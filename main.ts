@@ -252,6 +252,7 @@ const VIDEO_EXTENSIONS = ["mp4", "mov", "avi", "ogg", "wmv", "webm"];
     closeButton.addEventListener("click", () => closeGallery(wrapper));
 
     setStyle(closeButton, {
+      cursor: "pointer",
       position: "fixed",
       top: "0",
       right: "0",
